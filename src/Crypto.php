@@ -317,6 +317,20 @@ final class Crypto
      */
     private static function secureRandom($octets)
     {
+        if (function_exists('random_bytes')) {
+            try {
+                return random_bytes($octets);
+            } catch (Exception $ex) {
+                throw new Ex\CannotPerformOperationException(
+                    "random_bytes exception", 0, $ex
+                );
+            } catch (Error $ex) {
+                throw new Ex\CannotPerformOperationException(
+                    "random_bytes error", 0, $ex
+                );
+            }
+        }
+
         self::ensureFunctionExists('openssl_random_pseudo_bytes');
         $secure = false;
         $random = \openssl_random_pseudo_bytes($octets, $secure);
